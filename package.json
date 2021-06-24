@@ -4,8 +4,10 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node bin/www"
+    "test": "npx mocha --exit --recursive test/",
+    "start": "node bin/www",
+    "data:import": "node backend/seeder",
+    "data:destroy": "node backend/seeder -d"
   },
   "author": "Henry Agbasi",
   "license": "ISC",

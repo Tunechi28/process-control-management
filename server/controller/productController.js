@@ -174,6 +174,69 @@ const productsPendingSupervisorApproval = asyncHandler( async(req,res) => {
     }
 })
 
+const productsPendingManagerApproval = asyncHandler( async(req,res) => {
+    const products = await ProductModel.find({productLevel : 1 });
+    if(products){
+        res.status(200).json(products)
+    }else{
+        res.status(400);
+        throw new Error('no new products has been approved by the supervisor');
+    }
+})
+
+//@desc approve a product by Manager
+//@route PUT /api/products/:id/supervisor
+//@access public admins
+
+const managerUpdate = asyncHandler( async (req,res) => {
+    const product = await ProductModel.findById(req.params.id);
+    if(!product){
+        res.status(404);
+        throw new Error('product not found')
+    }
+    if(product.productLevel === 0){
+        res.json({
+            message : 'the product has not been approved by a supervisor'
+        })
+       
+    }else{
+        const { isApprovedByManager} = req.body
+        product.isApprovedByManager = isApprovedByManager;
+        product.isApprovedByManager ===true ? product.productLevel = 2 : product.productLevel =1;
+    
+        const updatedProduct = await product.save();
+    
+        
+        res.status(201).json({
+            id : updatedProduct._id,
+            productName : updatedProduct.productName,
+            quantity : updatedProduct.quantity,
+            price : updatedProduct.price,
+            productLevel : updatedProduct.productLevel,
+            storekeeperComment : updatedProduct.storekeeperComment,
+            isApprovedBySupervisor : updatedProduct.isApprovedBySupervisor,
+            supervisorComment : updatedProduct.supervisorComment,
+            isApprovedByManager : updatedProduct.isApprovedByManager
+    
+        })
+       
+    }
+   
+
+})
+
+
+const productsForSale = asyncHandler( async(req,res) => {
+    const products = await ProductModel.find({productLevel : 2 });
+    if(products){
+        res.status(200).json(products)
+    }else{
+        res.status(400);
+        throw new Error('this product has not been approved by he manager for sale');
+    }
+})
+
+
 module.exports = {
     getProducts,
     getProductById,
@@ -181,6 +244,8 @@ module.exports = {
     createProduct,
     updateProduct,
     supervisorUpdate,
-    productsPendingSupervisorApproval
+    productsPendingSupervisorApproval,
+    productsPendingManagerApproval,
+    managerUpdate
 }
 
