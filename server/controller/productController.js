@@ -151,6 +151,7 @@ const supervisorUpdate = asyncHandler( async (req,res) => {
         productName : updatedProduct.productName,
         quantity : updatedProduct.quantity,
         price : updatedProduct.price,
+        productLevel : updatedProduct.productLevel,
         storekeeperComment : updatedProduct.storekeeperComment,
         isApprovedBySupervisor : updatedProduct.isApprovedBySupervisor,
         supervisorComment : updatedProduct.supervisorComment
@@ -159,12 +160,27 @@ const supervisorUpdate = asyncHandler( async (req,res) => {
 
 })
 
+//@desc Get products approved by a supervisor
+//@route GET /api/products/:id/supervisor
+//@access public admins
+
+const productsPendingSupervisorApproval = asyncHandler( async(req,res) => {
+    const products = await ProductModel.find({productLevel : 0 });
+    if(products){
+        res.status(200).json(products)
+    }else{
+        res.status(400);
+        throw new Error('all products have been approved by supervisor and no new products have been created');
+    }
+})
 
 module.exports = {
     getProducts,
     getProductById,
     deleteProduct,
     createProduct,
-    updateProduct
+    updateProduct,
+    supervisorUpdate,
+    productsPendingSupervisorApproval
 }
 

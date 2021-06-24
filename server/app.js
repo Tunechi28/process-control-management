@@ -10,7 +10,7 @@ module.exports = (config) => {
     const app = express();
 
     //body-parser
-    app.use(express.urlencoded({ extended:false}));
+    app.use(express.urlencoded({ extended:true}));
     app.use(express.json());
 
     //routes
